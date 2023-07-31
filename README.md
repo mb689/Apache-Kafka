@@ -22,3 +22,15 @@
 - `Partitions`: Each kakfa topic can be divided into 1 more partitions. Data related to a particular category or key is stored in a specific partition. Imagine a library with different shelves for different genres of books (e.g., Fiction, Non-fiction, Mystery). Each shelf is like a partition, and books related to a specific genre are placed in their respective shelves. This way, the library can handle a large collection of books more efficiently.
 - `Offset`: An offset is like a bookmark that keeps track of where you left off reading in each partition. It's a unique number assigned to each message within a partition, like a page number in a book. When you read a message from a partition, you remember the offset (page number) of that message. The next time you come back to read, you start from the offset you remembered, so you don't miss any messages. It helps you keep your place and read messages in order. Each meesage within a partition gets an incremental ID which is referred to as an offset.
 - IMPORTANT -> Kafka topics are `immutable`: once data is written to a partition, it cannot be changed.
+![](./Images/truck_gps_kafka.png)
+- Diagram above shows a new truck_gps topic recieving multiple truck gps locations every 20 seconds and storing them within the 10 partitions created. Then making this data available for different services such as location dashboard or notification service. 
+
+## Important Notes
+- Once data is written to a partition, it cannot be changed `(immutability)`.
+- Data is kept only for a limited time (default is one week - configurable).
+- Offset only have a meaning for a specfic partition:
+    - E.g. offset 3 in partition 0 doesnt represent the same data as offset 3 in partition 1.
+    - Offsets are not re-used even if previous messages have been delete, they just keep incrementing.
+- Order is guranteed order within a partition (not across partitions).
+- Data us assigned randomly to partitions unless a `key` is provided.
+- You can have as many partitions per topic as you want.
