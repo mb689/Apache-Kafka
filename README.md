@@ -34,3 +34,20 @@
 - Order is guranteed order within a partition (not across partitions).
 - Data us assigned randomly to partitions unless a `key` is provided.
 - You can have as many partitions per topic as you want.
+
+## Kafka Producers 
+- Producers are what write data to topics (which are made of partitions).
+- Producers know which partition to write to (and which kafka broker has it).
+- In case of kafka broker failures, producers will automatically recover.
+![](./Images/kafka_producers.png)
+
+## Producers: Message keys
+- Producers can choose to send a key with the message in the format of strings, numbers, binary, etc....
+- If `key = null` then data is sent round robin (partition 0, then 1, then 2...).
+- If `key != null` then all messages with that key will always go to the same partition (hashing).
+- A key are typically sent if you need message ordering for a specific field (ex: truck_id).
+![](./Images/producers_keys.png)
+
+## Kafka message anatomy
+![](./Images/Kafka_message.png)
+- A kafka message created by a producer comes with many parts. At the top are key and value which can both be null or store data. Both of these are in binary format when being sent to apache kafka. Underneath that we have the compression type which may be used if data needs to be made smaller. Below that we have the Headers which contains key value pairs about the data within the message. For example a header can contain information of the origin of the message such as the application or system. We then have which partition the data will be held at and a new unique offset is allocated to the data. The last thing is the timestamp of when the message was created this can be given by the system or set by a user. Once all of these are made and put together it is ready to be sent to apache kafka.
