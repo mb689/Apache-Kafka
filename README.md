@@ -51,3 +51,26 @@
 ## Kafka message anatomy
 ![](./Images/Kafka_message.png)
 - A kafka message created by a producer comes with many parts. At the top are key and value which can both be null or store data. Both of these are in binary format when being sent to apache kafka. Underneath that we have the compression type which may be used if data needs to be made smaller. Below that we have the Headers which contains key value pairs about the data within the message. For example a header can contain information of the origin of the message such as the application or system. We then have which partition the data will be held at and a new unique offset is allocated to the data. The last thing is the timestamp of when the message was created this can be given by the system or set by a user. Once all of these are made and put together it is ready to be sent to apache kafka.
+
+## Kafka Message Serializer
+- It is important to note that kafka only accpets bytes as an input from producers and sends bytes out as an output to consumers. 
+- Message serialization means transforming objects/data into bytes.
+- This is used on keys and values.
+- Common serializers are string, int, float, avro and protobuf.
+
+![](./Images/message_serializer.png)
+
+## Kafka Consumers
+- Consumers read data from a topic (identified by name) - pull model.
+- Consumers automatically know which broker to read from.
+- In case of broker failures, consumers know how to recover.
+- Data is read in order from low to high offset `within each partitions`.
+![](./Images/kafka_consumer.png)
+
+## Consumer Deserializer
+- Deserialize indicates how to tranform bytes into object / data.
+- They are used on the key and value of the message.
+- Common deserializers are string, int, float, avro and protobuf.
+- The Consumer must know the type beforehand to know which deserializer to use to change the bytes into objects/data.
+- It is important the serializtion / deserialization type does not change during the topic lifecycle. (Create a new topic if you want type to change).
+![](./Images/consumer_deserializer.png)
