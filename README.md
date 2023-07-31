@@ -74,3 +74,46 @@
 - The Consumer must know the type beforehand to know which deserializer to use to change the bytes into objects/data.
 - It is important the serializtion / deserialization type does not change during the topic lifecycle. (Create a new topic if you want type to change).
 ![](./Images/consumer_deserializer.png)
+
+## Kafka Consumer Groups
+- All the consumers in an application read data as consumer groups.
+- Each consumer within a group reads data from exclusive partitions.
+- To summarize, consumer groups in Kafka allow multiple consumers to work together, processing data from a topic in parallel, and enabling seamless scalability of data processing as your needs increase. It ensures that data is efficiently processed and no consumer is overwhelmed with the entire workload.
+![](./Images/consumer_groups.png)
+
+### What if there are more consumers than partitions?
+- If there were to ever be a case where there are more consumers than partitions then the remaining consumers will be inactive and be on standby for any new partitions created which need data to be read from.
+![](./Images/consumer_group_inactive.png)
+
+## Multiple Consumer in one topic
+- In apache kafka it is acceptable to have multiple consumer groups on the same topic.
+- To create distinct consumer groups, use the consumer property `group.id`.
+- Reason to use multi-group consumers is to allowe multiple services to read from the same topic.
+![](./Images/multi_consumer_group.png)
+
+## Consumer Offsets
+- Kafka stores the offsets at which a consumer group has been reading. 
+- The offsets committed are in a kafka topic named `__consumer_offsets`.
+- When a consumer in a group has processed data received from kafka, it should be periodically commiting the offsets (the kafka brojer will write to `__consumer_offsets`, not the group itself).
+- If a consumer dies, it will be able to read back from where it left off thanks to the committed consumer offsets. 
+- Heres how it works:
+    - As a consumer reads messages from a partition, it keeps track of the current offset, which represents the position of the last message it has processed.
+    - Periodically or after processing a batch of messages, the consumer commits its current offset to Kafka. This means it tells Kafka that it has successfully processed messages up to that particular offset.
+    - The committed offset is then used to ensure that when the consumer restarts or encounters a failure, it can resume reading from where it left off. Kafka remembers the committed offset for each consumer group, allowing consumers to pick up where they stopped.
+- By committing offsets, consumers achieve reliability and avoid processing the same message multiple times. If a consumer fails, another consumer in the same group can take over processing, starting from the last committed offset. This ensures that data processing is both efficient and fault-tolerant in Kafka's consumer groups.
+![](./Images/consumer_offsets.png)
+
+## Delivery semantics for consumers
+- By default, Java Consumers will automatically commit offsets (at least once)
+- There are 3 delivery semantics if you choose to commit manually.
+- At least once (usually preffered)
+    - Offsets are commited after the message is processed.
+    - If the processing goes wrong, the message will be read again.
+    - This can result in duplicate processing of messages. Make sure processing is `indempotent` (i.e. processubg again the message wont impact the systems).
+- At most once
+    - Offsets are commited as soon as messages are recieved.
+    - If the processing goes wrong, some messages will be lost (They will not be read again).
+- Exactly once
+    - For Kafka => kafka workflows: use the transactional API (easy with kafka streams API).
+    - For Kafka => External System workflows: use an indempotent consumer.
+
