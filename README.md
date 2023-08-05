@@ -141,3 +141,40 @@
 ![](./Images/broker_down.png)
 - Example: we lose Broker 102.
 - Result: Broker 101 and 103 can still serve the data.
+
+## Concept of leader for a partition
+- At any time only one broker can be a leader for a given partition.
+- Producers can only send data to the broker that is leader of a partition.
+- The ohter brokers will replicate the data.
+- Therefore, each partition has one leader and multiple ISR (in-sync replica)
+![](./Images/kafka_leaders.png)
+
+## Default produce & consumer behavior with leaders.
+- Kafka Producers can only write to the leader broker for a partition.
+- Kafka Consumers by default will read from the leader broker for a partition.
+![](./Images/kafka_client_default.png)
+
+## Kafka Consumers replica fetching (Kafka v2.4+)
+- Since the update it is possible to configure consumers to read from the closet replica.
+- This may help improve latency, and also decrease network costs if using the cloud.
+![](./Images/kafka_update.png)
+
+## Producers Acknowledgements (acks)
+- Producers can choose to recieve acknowledgements of data writes:
+    - acks=0: Producer wont wait for acknowledgement (possible data loss)
+    - acks=1: Producer will wait for leader acknowledgement (limited data loss)
+    - acks=all: Leader + replicas acknowledgement (no data loss)
+
+## Kafka Topic Durability
+- For a topic replication factor of 3, topic data durability can withstand 2 brokers loss.
+- As a rule, for a replication factor of `N`, you can permanently lose up to `N-1` brokers and still recover your data.
+
+## ZooKeeper
+- Zookeeper manages brokers (keeps a list of them).
+- Zookeeper help in performing leader election for partitions.
+- Zookeeper sends notification such as metadata to kafka brokers in case of changes.
+- kafka 2.x can't work without zookeeper || kafka 3.x can work without zookeeper using kafka raft instead || kafka 4.x will not have zookeeper
+- Zookeeper work in odd number of servers
+- Zookeeper has a leader (writes) the rest of the servers are followers (Reads).
+- Zookeeper does not store consumer offsets with kafka > 0.10.
+
