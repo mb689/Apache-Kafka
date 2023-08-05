@@ -117,3 +117,27 @@
     - For Kafka => kafka workflows: use the transactional API (easy with kafka streams API).
     - For Kafka => External System workflows: use an indempotent consumer.
 
+## Kafka Brokers
+- A kafka cluster is composed of multiple brokers (Servers).
+- Each broker is identified with its ID (integer).
+- Each broker contains certain topic partitions.
+- After connecting to any broke, you will be connected to the entire cluster. (Kafka clients have a smart mechanic for this).
+- A good number to get started is 3 brokers, but some clusters have over 100 brokers to get started.
+![](./Images/Brokers_Kafka.png)
+- Example of Topic-A with 3 partitions and Topic-B with 2 partitions spread across 3 brokers.
+
+## Kafka Broker Discovery
+- Each kafka broker is also called a `bootstrap server`.
+- That means that kafka client needs to only connect to one broker and it will automatically know how to connect to any broker within the kafka cluster.
+- Each broker know about all the other brokers, topic and partitions within its cluster.
+![](./Images/Kafka_connect.png)
+- The kafka client first tries to connect and request metadata from one of the brokers within the cluster. The broker then sends a list of all the broker, topics and partitions within its cluster. The client is then able to connect to the intended broker within the cluster to either write data (producers) or read data (consumers).
+
+## Topic Replication
+- Topics should have a replication factor > 1 (usually 2 or 3)
+- This way is a broker is down, another broker can serve the data.
+![](./Images/topic_replication.png)
+- Example: Topic-A with 2 partitions and replication factor of 2
+![](./Images/broker_down.png)
+- Example: we lose Broker 102.
+- Result: Broker 101 and 103 can still serve the data.
