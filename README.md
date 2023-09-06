@@ -178,3 +178,5 @@
 - Zookeeper has a leader (writes) the rest of the servers are followers (Reads).
 - Zookeeper does not store consumer offsets with kafka > 0.10.
 
+## Setting up Apache Kafka on workstation
+- Follow the link for instructions on how to setup kafka on particular workstaions: `https://www.conduktor.io/kafka/starting-kafka/`.
